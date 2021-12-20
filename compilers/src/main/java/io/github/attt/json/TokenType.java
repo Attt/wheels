@@ -11,7 +11,7 @@ public enum TokenType {
 
     STRING(""),
     NUMBER("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "e", "E", "-", "."),
-    BOOL("true","false"),
+    BOOL("true", "false"),
     NULL("null"),
     COMMA(","),
     COLON(":"),
@@ -20,7 +20,8 @@ public enum TokenType {
     RIGHT_BRACKET("]"),
     LEFT_BRACE("{"),
     RIGHT_BRACE("}"),
-    JSON_QUOTE("'", "\"");
+    JSON_SINGLE_QUOTE("'"),
+    JSON_DOUBLE_QUOTE("\"");
 
     private Set<String> tokens;
 
@@ -29,7 +30,7 @@ public enum TokenType {
         this.tokens.addAll(Arrays.asList(tokens));
     }
 
-    public boolean findToken(String str){
+    public boolean findToken(String str) {
         return tokens.contains(str);
     }
 

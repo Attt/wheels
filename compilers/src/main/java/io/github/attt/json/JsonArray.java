@@ -1,8 +1,8 @@
 package io.github.attt.json;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 /**
@@ -35,6 +35,10 @@ public class JsonArray implements Json {
 
     @Override
     public String toString() {
-        return Arrays.deepToString(array.toArray());
+        StringJoiner joiner = new StringJoiner(",");
+        for (Object v : array) {
+            joiner.add(v instanceof String ? "'" + v + "'" : v.toString());
+        }
+        return joiner.toString();
     }
 }

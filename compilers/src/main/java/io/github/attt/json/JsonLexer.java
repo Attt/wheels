@@ -58,15 +58,21 @@ public class JsonLexer {
     }
 
     private JsonToken lexString(JsonString jsonStr) {
-        if (!TokenType.JSON_QUOTE.findToken(jsonStr.cutTo(1))) {
-            return null;
-        }
+        boolean single = false, _double = false;
+        // FIXME: 2021/12/20 find a better way to tell if open quote is the same character as the close quote is
+        single = TokenType.JSON_SINGLE_QUOTE.findToken(jsonStr.cutTo(1));
+        _double = TokenType.JSON_DOUBLE_QUOTE.findToken(jsonStr.cutTo(1));
+        if (!single && !_double) return null;
         jsonStr.cutAndUpdate(1);
         Iterator<String> iterator = jsonStr.iterator();
         StringBuilder stringBuilder = new StringBuilder();
         while (iterator.hasNext()) {
             String next = iterator.next();
-            if (TokenType.JSON_QUOTE.findToken(next)) {
+            if (single && TokenType.JSON_SINGLE_QUOTE.findToken(next)) {
+                jsonStr.cutAndUpdate(1);
+                return new JsonToken(stringBuilder.toString(), TokenType.STRING);
+            }
+            if (_double && TokenType.JSON_DOUBLE_QUOTE.findToken(next)) {
                 jsonStr.cutAndUpdate(1);
                 return new JsonToken(stringBuilder.toString(), TokenType.STRING);
             }
