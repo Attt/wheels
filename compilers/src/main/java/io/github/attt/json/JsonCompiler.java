@@ -1,17 +1,15 @@
 package io.github.attt.json;
 
-import java.util.List;
-
 /**
  * @author atpexgo
  */
-public class JsonCompiler {
+public final class JsonCompiler {
 
     public static Object compile(String jsonStr) {
         JsonLexer lexer = new JsonLexer();
-        List<JsonToken> jsonTokens = lexer.lex(jsonStr);
+        JsonToken tokens = lexer.lex(jsonStr);
         JsonParser parser = new JsonParser();
-        return parser.parse(jsonTokens);
+        return parser.parse(tokens);
     }
 
 }

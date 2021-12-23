@@ -1,40 +1,43 @@
 package io.github.attt.json;
 
+import java.util.List;
+
 /**
  * @author atpexgo
  */
-public class JsonToken {
+public final class JsonToken {
 
-    private Object value;
+    private final List<Token> tokens;
 
-    private TokenType type;
+    private int cursor;
 
-    public JsonToken(Object value, TokenType type) {
-        this.value = value;
-        this.type = type;
+    public JsonToken(List<Token> tokens) {
+        this.tokens = tokens;
+        reset();
     }
 
-    public Object getValue() {
-        return value;
+    public void forward() {
+        cursor++;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public void reset() {
+        cursor = 0;
     }
 
-    public TokenType getType() {
-        return type;
+    public int size() {
+        return tokens.size();
     }
 
-    public void setType(TokenType type) {
-        this.type = type;
+    public Token get() {
+        if (cursor >= tokens.size()) throw new RuntimeException("Unexpected end-of-json");
+        return tokens.get(cursor);
     }
 
     @Override
     public String toString() {
         return "JsonToken{" +
-                "value=" + value +
-                ", type=" + type +
+                "tokens=" + tokens +
+                ", cursor=" + cursor +
                 '}';
     }
 }

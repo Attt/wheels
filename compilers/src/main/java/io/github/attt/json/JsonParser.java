@@ -1,78 +1,70 @@
 package io.github.attt.json;
 
-import java.util.List;
-
 /**
  * @author atpexgo
  */
-public class JsonParser {
+public final class JsonParser {
 
-    int currentTokenIdx = 0;
-
-    public Object parse(List<JsonToken> tokens) {
+    public Object parse(JsonToken tokens) {
         if (tokens == null || tokens.size() == 0) return null;
-        JsonToken jsonToken = tokens.get(currentTokenIdx);
-        currentTokenIdx++;
-        if (jsonToken.getType() == TokenType.LEFT_BRACKET) {
+        Token token = tokens.get();
+        tokens.forward();
+        if (token.getSyntax() == Syntax.LEFT_BRACKET) {
             return parseArray(tokens);
-        } else if (jsonToken.getType() == TokenType.LEFT_BRACE) {
+        } else if (token.getSyntax() == Syntax.LEFT_BRACE) {
             return parseObj(tokens);
         } else {
-            return jsonToken.getValue();
+            return token.getValue();
         }
     }
 
-    public JsonObj parseObj(List<JsonToken> tokens) {
+    public JsonObj parseObj(JsonToken tokens) {
         JsonObj jsonObj = new JsonObj();
-        JsonToken jsonToken = tokens.get(currentTokenIdx);
-        if (jsonToken.getType() == TokenType.RIGHT_BRACE) {
+        Token token = tokens.get();
+        if (token.getSyntax() == Syntax.RIGHT_BRACE) {
             return jsonObj;
         }
         while (true) {
-            JsonToken stringKey = tokens.get(currentTokenIdx);
-            if (stringKey.getType() == TokenType.STRING && stringKey.getValue() instanceof String) {
-                currentTokenIdx++;
-            } else {
+            Token stringKey = tokens.get();
+            if (stringKey.getSyntax() != Syntax.STRING || !(stringKey.getValue() instanceof String)) {
                 throw new RuntimeException(String.format("Expected string key, got: %s", stringKey.getValue()));
             }
-            JsonToken colon = tokens.get(currentTokenIdx);
-            if (colon.getType() != TokenType.COLON) {
+            tokens.forward();
+            Token colon = tokens.get();
+            if (colon.getSyntax() != Syntax.COLON) {
                 throw new RuntimeException(String.format("Expected colon after key in object, got: %s", colon.getValue()));
             }
-            currentTokenIdx++;
+            tokens.forward();
             Object value = parse(tokens);
             jsonObj.put(String.valueOf(stringKey.getValue()), value);
-            JsonToken rightBrace = tokens.get(currentTokenIdx);
-            if (rightBrace.getType() == TokenType.RIGHT_BRACE) {
-                currentTokenIdx++;
+            Token rightBrace = tokens.get();
+            if (rightBrace.getSyntax() == Syntax.RIGHT_BRACE) {
+                tokens.forward();
                 return jsonObj;
-            } else if (rightBrace.getType() != TokenType.COMMA) {
+            } else if (rightBrace.getSyntax() != Syntax.COMMA) {
                 throw new RuntimeException(String.format("Expected comma after pair in object, got: %s", rightBrace.getValue()));
             }
-            currentTokenIdx++;
+            tokens.forward();
         }
-        //throw new RuntimeException("Expected end-of-object brace");
     }
 
-    public JsonArray parseArray(List<JsonToken> tokens) {
+    public JsonArray parseArray(JsonToken tokens) {
         JsonArray jsonArray = new JsonArray();
-        JsonToken jsonToken = tokens.get(currentTokenIdx);
-        if (jsonToken.getType() == TokenType.RIGHT_BRACKET) {
+        Token jsonToken = tokens.get();
+        if (jsonToken.getSyntax() == Syntax.RIGHT_BRACKET) {
             return jsonArray;
         }
         while (true) {
             Object json = parse(tokens);
             jsonArray.add(json);
-            JsonToken token = tokens.get(currentTokenIdx);
-            if (token.getType() == TokenType.RIGHT_BRACKET) {
-                currentTokenIdx++;
+            Token token = tokens.get();
+            if (token.getSyntax() == Syntax.RIGHT_BRACKET) {
+                tokens.forward();
                 return jsonArray;
-            } else if (token.getType() != TokenType.COMMA) {
+            } else if (token.getSyntax() != Syntax.COMMA) {
                 throw new RuntimeException("Expected comma after object in array");
-            } else {
-                currentTokenIdx++;
             }
+            tokens.forward();
         }
-        //throw new RuntimeException("Expected end-of-array bracket");
     }
 }

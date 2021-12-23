@@ -5,7 +5,7 @@ import java.util.Iterator;
 /**
  * @author atpexgo
  */
-public class JsonString implements Iterable<String> {
+public final class JsonString implements Iterable<String> {
 
     private String string;
 
@@ -20,43 +20,13 @@ public class JsonString implements Iterable<String> {
         return string;
     }
 
-    public String stringAt(int idx) {
-        return stringAt(string, idx);
+    public String initialString() {
+        return stringAt(string, 0);
     }
 
-    private String stringAt(String str, int idx) {
-        if (idx >= str.length()) return str;
-        return String.valueOf(str.charAt(idx));
-    }
-
-    public String cut(int from) {
-        return string.substring(from);
-    }
-
-    public String cut(int from, int end) {
-        return string.substring(from, end);
-    }
-
-    public String cutTo(int end) {
-        return string.substring(0, end);
-    }
-
-    public String cutAndUpdate(int from) {
+    public void sliceFrom(int from) {
         string = string.substring(from);
         size = string.length();
-        return string;
-    }
-
-    public String cutAndUpdateTo(int end) {
-        string = string.substring(0, end);
-        size = string.length();
-        return string;
-    }
-
-    public String cutAndUpdate(int from, int end) {
-        string = string.substring(from, end);
-        size = string.length();
-        return string;
     }
 
     public int size() {
@@ -84,4 +54,8 @@ public class JsonString implements Iterable<String> {
         };
     }
 
+    private String stringAt(String str, int idx) {
+        if (idx >= str.length()) return str;
+        return String.valueOf(str.charAt(idx));
+    }
 }
