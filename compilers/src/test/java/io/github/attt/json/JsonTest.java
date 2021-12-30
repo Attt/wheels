@@ -8,19 +8,44 @@ import org.junit.jupiter.api.Test;
 public class JsonTest {
 
     @Test
+    public void TestDynamicString() {
+        DynamicString string = new DynamicString("abcdefg");
+        System.out.println(string.getString());
+        System.out.println(string.getInitialString());
+        System.out.println(string.getString(0, 2));
+        string.slice(2, 6);
+        System.out.println(string.getString(0, 1));
+        System.out.println(string.getString());
+        for (String s : string) {
+            System.out.println(s);
+        }
+
+        string = new DynamicString("abcd");
+        string.slice(1);
+        System.out.println(string);
+        System.out.println(string.length());
+        string.slice(1);
+        System.out.println(string);
+        System.out.println(string.length());
+        string.slice(1);
+        System.out.println(string);
+        System.out.println(string.length());
+    }
+
+    @Test
     public void TestLexer() {
         JsonLexer lexer = new JsonLexer();
-        JsonToken tokens = lexer.lex("{\"a\":[{\"b\":'va'},{'c':1.1},{'d':2}]}");
-        System.out.println(tokens);
+        LexisList lexis = lexer.lex("{\"a\":[{\"b\":'va'},{'c':1.1},{'d':2}]}");
+        System.out.println(lexis);
     }
 
 
     @Test
     public void TestParser() {
         JsonLexer lexer = new JsonLexer();
-        JsonToken tokens = lexer.lex("{\"a\":[{\"b\":'va'},{'c':1.1},{'d':2}]}");
+        LexisList lexis = lexer.lex("{\"a\":[{\"b\":'va'},{'c':1.1},{'d':2}]}");
         JsonParser parser = new JsonParser();
-        Object obj = parser.parse(tokens);
+        Object obj = parser.parse(lexis);
         System.out.println(obj);
     }
 
@@ -49,5 +74,12 @@ public class JsonTest {
         System.out.println(compiled);
     }
 
+    @Test
+    public void TestTypedCompiling() {
+        JsonObj jsonObj = JsonCompiler.compileObject("{\"glossary\":{\"title\":\"example glossary\",\"GlossDiv\":{\"title\":\"S\",\"GlossList\":{\"GlossEntry\":{\"ID\":\"SGML\",\"SortAs\":\"SGML\",\"GlossTerm\":\"Standard Generalized Markup Language\",\"Acronym\":\"SGML\",\"Abbrev\":\"ISO 8879:1986\",\"GlossDef\":{\"para\":\"A meta-markup language, used to create markup languages such as DocBook.\",\"GlossSeeAlso\":[\"GML\",\"XML\"]},\"GlossSee\":\"markup\"}}}}}");
+        System.out.println(jsonObj);
 
+        JsonArray jsonArray = JsonCompiler.compileArray("[1,2,'a',10E-4]");
+        System.out.println(jsonArray);
+    }
 }

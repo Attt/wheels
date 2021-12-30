@@ -1,70 +1,46 @@
 package io.github.attt.json;
 
-import java.util.Locale;
-import java.util.function.Function;
-
 /**
+ * Syntax in legal json string
+ *
  * @author atpexgo
  */
 public enum Syntax {
 
-    STRING(false, str -> str),
-    NUMBER(false, new Function<String, String>() {
-        private final String[] NUMBERS = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "e", "E", "-", "."};
+    COMMA(LexisType.COMMA, ","),
+    COLON(LexisType.COLON, ":"),
+    WHITE_SPACES(LexisType.WHITE_SPACES, "\t", "\r", "\n", " ", ""),
+    LEFT_BRACKET(LexisType.LEFT_BRACKET, "["),
+    RIGHT_BRACKET(LexisType.RIGHT_BRACKET, "]"),
+    LEFT_BRACE(LexisType.LEFT_BRACE, "{"),
+    RIGHT_BRACE(LexisType.RIGHT_BRACE, "}"),
+    APOSTROPHE(LexisType.APOSTROPHE, "'"),
+    DOUBLE_QUOTES(LexisType.DOUBLE_QUOTES, "\""),
+    LEFT_ANGLE_BRACKET(LexisType.LEFT_ANGLE_BRACKET, "<"),
+    RIGHT_ANGLE_BRACKET(LexisType.RIGHT_ANGLE_BRACKET, ">"),
+    LEFT_ROUND_BRACKET(LexisType.LEFT_ROUND_BRACKET, "("),
+    RIGHT_ROUND_BRACKET(LexisType.RIGHT_ROUND_BRACKET, ")"),
+    EQUAL(LexisType.EQUAL, "="),
+    AT(LexisType.AT, "@"),
+    QUESTION_MARK(LexisType.QUESTION_MARK, "?"),
+    DOLLAR(LexisType.DOLLAR, "$"),
+    ASTERISK(LexisType.ASTERISK, "*"),
+    DOT(LexisType.DOT, ".");
 
-        @Override
-        public String apply(String s) {
-            if (s.length() != 0)
-                for (String number : NUMBERS) {
-                    if (s.equals(number)) return number;
-                }
-            return null;
-        }
-    }),
-    BOOL(false, bool -> bool != null
-            && ((bool.length() > 4 && (bool = bool.substring(0, 5).toLowerCase(Locale.ROOT)).equals("false")) || (bool.length() > 3 && (bool = bool.substring(0, 4).toLowerCase(Locale.ROOT)).equals("true"))) ? bool : null),
-    NULL(false, _null -> _null.length() > 3 && _null.startsWith("null") ? "null" : null),
-    COMMA(true, comma -> ",".equals(comma) ? "," : null),
-    COLON(true, colon -> ":".equals(colon) ? ":" : null),
-    WHITE_SPACES(false, new Function<String, String>() {
-        private final String[] WHITE_SPACES = {"\t", "\r", "\n", " ", ""};
+    private final LexisType lexisType;
 
-        @Override
-        public String apply(String s) {
-            for (String whiteSpace : WHITE_SPACES) {
-                if (whiteSpace.equals(s)) return whiteSpace;
-            }
-            return null;
-        }
-    }),
-    LEFT_BRACKET(true, leftBracket -> "[".equals(leftBracket) ? "[" : null),
-    RIGHT_BRACKET(true, rightBracket -> "]".equals(rightBracket) ? "]" : null),
-    LEFT_BRACE(true, leftBrace -> "{".equals(leftBrace) ? "{" : null),
-    RIGHT_BRACE(true, rightBrace -> "}".equals(rightBrace) ? "}" : null),
-    APOSTROPHE(false, apostrophe -> "'".equals(apostrophe) ? "'" : null),
-    DOUBLE_QUOTES(false, doubleQuotes -> "\"".equals(doubleQuotes) ? "\"" : null);
+    private final String[] syntax;
 
-    private final boolean isJsonSyntax;
-
-    private final Function<String, String> predicate;
-
-    Syntax(boolean isJsonSyntax, Function<String, String> predicate) {
-        this.isJsonSyntax = isJsonSyntax;
-        this.predicate = predicate;
+    Syntax(LexisType lexisType, String... syntax) {
+        this.lexisType = lexisType;
+        this.syntax = syntax;
     }
 
-    public String test(String str) {
-        return predicate.apply(str);
+    public LexisType getLexisType() {
+        return lexisType;
     }
 
-    public boolean isJsonSyntax() {
-        return isJsonSyntax;
-    }
-
-    public static Syntax testAndGetJsonSyntax(String str) {
-        for (Syntax syntax : values()) {
-            if (syntax.isJsonSyntax && syntax.test(str) != null) return syntax;
-        }
-        return null;
+    public String[] getSyntax() {
+        return syntax;
     }
 }

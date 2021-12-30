@@ -1,9 +1,13 @@
 package io.github.attt.json;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringJoiner;
 
 /**
+ * <strong>Warning</strong>: {@link #put(String, Object)} is not thread safe
+ *
  * @author atpexgo
  */
 public class JsonObj implements Json {
@@ -41,14 +45,44 @@ public class JsonObj implements Json {
         return null;
     }
 
+    private List<JsonObjEle> allNodes() {
+        List<JsonObjEle> allNodes = new ArrayList<>();
+        for (JsonObjEle element : elements) {
+            if (element != null) {
+                allNodes.add(element);
+                while (element.next != null) {
+                    element = element.next;
+                    allNodes.add(element);
+                }
+            }
+        }
+        return allNodes;
+    }
+
     private int hash(String key) {
         return Math.abs(key.hashCode());
     }
 
-    static class JsonObjEle {
+    public static class JsonObjEle {
         String key;
         Object value;
         JsonObjEle next;
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
+        }
 
         @Override
         public String toString() {

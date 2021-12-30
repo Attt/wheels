@@ -3,7 +3,6 @@ package io.github.attt.json;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Stream;
 
 /**
  * @author atpexgo
@@ -11,10 +10,6 @@ import java.util.stream.Stream;
 public class JsonArray implements Json {
 
     private final List<Object> array = new ArrayList<>();
-
-    public Stream<Object> stream() {
-        return array.stream();
-    }
 
     public void add(Object obj) {
         array.add(obj);
@@ -41,4 +36,5 @@ public class JsonArray implements Json {
         }
         return joiner.toString();
     }
+
 }

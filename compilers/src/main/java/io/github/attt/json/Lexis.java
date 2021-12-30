@@ -3,15 +3,15 @@ package io.github.attt.json;
 /**
  * @author atpexgo
  */
-public final class Token {
+public final class Lexis {
 
     private Object value;
 
-    private Syntax syntax;
+    private LexisType type;
 
-    public Token(Object value, Syntax syntax) {
+    public Lexis(Object value, LexisType type) {
         this.value = value;
-        this.syntax = syntax;
+        this.type = type;
     }
 
     public Object getValue() {
@@ -22,19 +22,19 @@ public final class Token {
         this.value = value;
     }
 
-    public Syntax getSyntax() {
-        return syntax;
+    public LexisType getType() {
+        return type;
     }
 
-    public void setSyntax(Syntax syntax) {
-        this.syntax = syntax;
+    public void setType(LexisType type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
-        return "Token{" +
+        return "Lexis{" +
                 "value=" + value +
-                ", syntax=" + syntax +
+                ", type=" + type +
                 '}';
     }
 }
