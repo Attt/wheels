@@ -2,6 +2,8 @@ package io.github.attt.json;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 /**
  * @author atpexgo
  */
@@ -10,14 +12,14 @@ public class JsonTest {
     @Test
     public void TestDynamicString() {
         DynamicString string = new DynamicString("abcdefg");
-        System.out.println(string.getString());
-        System.out.println(string.getInitialString());
+        System.out.println(string);
+        System.out.println(string.getChar(0));
         System.out.println(string.getString(0, 2));
         string.slice(2, 6);
         System.out.println(string.getString(0, 1));
-        System.out.println(string.getString());
-        for (String s : string) {
-            System.out.println(s);
+        System.out.println(string);
+        for (char ch : string) {
+            System.out.println(ch);
         }
 
         string = new DynamicString("abcd");
@@ -81,5 +83,14 @@ public class JsonTest {
 
         JsonArray jsonArray = JsonCompiler.compileArray("[1,2,'a',10E-4]");
         System.out.println(jsonArray);
+    }
+
+    @Test
+    public void TestScan() {
+        Json json = (Json) JsonCompiler.compile("{\"testKey\":[{\"testKey\":2.233},\"testKey\"],\"testKey1\":123,\"testKey2\":{\"testKey\":\"hello\"}}");
+        List<Object> objects = json.scan("testKey", false);
+        System.out.println(objects);
+        objects = json.scan("testKey", true);
+        System.out.println(objects);
     }
 }

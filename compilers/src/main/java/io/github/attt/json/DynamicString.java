@@ -6,33 +6,31 @@ import java.util.Iterator;
 /**
  * @author atpexgo
  */
-public final class DynamicString implements Iterable<String> {
+public final class DynamicString implements Iterable<Character> {
 
-    private final char[] string;
+    private final char[] value;
 
     private int offset = 0;
 
     private int count;
 
     public DynamicString(String string) {
-        this.string = Arrays.copyOf(string.toCharArray(), string.toCharArray().length);
-        this.count = this.string.length;
-    }
-
-    public String getString() {
-        return String.valueOf(string, offset, count);
+        this.value = Arrays.copyOf(string.toCharArray(), string.toCharArray().length);
+        this.count = this.value.length;
     }
 
     public String getString(int from, int to) {
         if (to <= from) throw new IllegalArgumentException("'to' is smaller than 'from'");
         int tmpCount = to - from;
         int tmpOffset = offset + from;
-        if (tmpOffset + tmpCount > string.length) throw new StringIndexOutOfBoundsException();
-        return String.valueOf(string, tmpOffset, tmpCount);
+        if (tmpOffset + tmpCount > value.length) throw new StringIndexOutOfBoundsException();
+        return String.valueOf(value, tmpOffset, tmpCount);
     }
 
-    public String getInitialString() {
-        return stringAt(offset);
+    public char getChar(int offset) {
+        int tmpOffset = offset + this.offset;
+        if (tmpOffset >= value.length) throw new StringIndexOutOfBoundsException();
+        return charAt(tmpOffset);
     }
 
     public void slice(int from) {
@@ -53,8 +51,8 @@ public final class DynamicString implements Iterable<String> {
     }
 
     @Override
-    public Iterator<String> iterator() {
-        return new Iterator<String>() {
+    public Iterator<Character> iterator() {
+        return new Iterator<Character>() {
 
             private int idx = offset;
 
@@ -66,26 +64,26 @@ public final class DynamicString implements Iterable<String> {
             }
 
             @Override
-            public String next() {
-                String next = stringAt(idx);
+            public Character next() {
+                Character next = charAt(idx);
                 idx++;
                 return next;
             }
         };
     }
 
-    private String stringAt(int idx) {
-        if (idx >= string.length) return "";
-        return String.valueOf(string[idx]);
+    private char charAt(int idx) {
+        if (idx >= value.length) throw new ArrayIndexOutOfBoundsException();
+        return value[idx];
     }
 
     @Override
     public String toString() {
-        return getString();
+        return String.valueOf(value, offset, count);
     }
 
     private void checkBound() {
-        if (offset > string.length || offset + count > string.length) throw new StringIndexOutOfBoundsException();
+        if (offset > value.length || offset + count > value.length) throw new StringIndexOutOfBoundsException();
     }
 
 }

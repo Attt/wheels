@@ -29,6 +29,15 @@ public class JsonArray implements Json {
     }
 
     @Override
+    public List<Object> scan(String key, boolean deepScan) {
+        List<Object> result = new ArrayList<>();
+        for (Object o : array) {
+            if (o instanceof Json) result.addAll(((Json) o).scan(key, deepScan));
+        }
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(",");
         for (Object v : array) {

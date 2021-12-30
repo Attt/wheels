@@ -7,6 +7,7 @@ package io.github.attt.json;
  */
 public enum LexisType {
 
+    PLAIN,
     STRING,
     NUMBER,
     NULL,

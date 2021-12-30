@@ -45,20 +45,6 @@ public class JsonObj implements Json {
         return null;
     }
 
-    private List<JsonObjEle> allNodes() {
-        List<JsonObjEle> allNodes = new ArrayList<>();
-        for (JsonObjEle element : elements) {
-            if (element != null) {
-                allNodes.add(element);
-                while (element.next != null) {
-                    element = element.next;
-                    allNodes.add(element);
-                }
-            }
-        }
-        return allNodes;
-    }
-
     private int hash(String key) {
         return Math.abs(key.hashCode());
     }
@@ -93,6 +79,23 @@ public class JsonObj implements Json {
     @Override
     public boolean isArray() {
         return false;
+    }
+
+    @Override
+    public List<Object> scan(String key, boolean deepScan){
+        List<Object> result = new ArrayList<>();
+        for (JsonObjEle element : elements) {
+            if(element != null){
+                if(element.key.equals(key)) result.add(element.value);
+                if (deepScan && element.value instanceof Json) result.addAll(((Json) element.value).scan(key, deepScan));
+                while (element.next != null){
+                    element = element.next;
+                    if(element.key.equals(key)) result.add(element.value);
+                    if (deepScan && element.value instanceof Json) result.addAll(((Json) element.value).scan(key, deepScan));
+                }
+            }
+        }
+        return result;
     }
 
     @Override

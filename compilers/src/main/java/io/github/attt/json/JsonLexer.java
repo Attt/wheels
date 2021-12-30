@@ -1,7 +1,9 @@
 package io.github.attt.json;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author atpexgo
@@ -28,15 +30,15 @@ public final class JsonLexer {
             if (nullLexis != null) {
                 lexis.add(boolLexis);
             }
-            String nextStr = jsonString.getInitialString();
+            char nextChar = jsonString.getChar(0);
             Syntax syntax;
-            if (LexerUtil.WHITE_SPACES.contains(nextStr)) {
+            if (LexerUtil.testWhiteSpace(nextChar)) {
                 jsonString.slice(1);
-            } else if ((syntax = LexerUtil.testAll(nextStr)) != null) {
-                lexis.add(new Lexis(nextStr, syntax.getLexisType()));
+            } else if ((syntax = LexerUtil.testAll(nextChar)) != null) {
+                lexis.add(new Lexis(nextChar, syntax.getLexisType()));
                 jsonString.slice(1);
             } else {
-                throw new RuntimeException(String.format("Unexpected character: %s", nextStr));
+                throw new RuntimeException(String.format("Unexpected character: %s", nextChar));
             }
         }
         return new LexisList(lexis);
@@ -44,35 +46,35 @@ public final class JsonLexer {
 
     private Lexis lexString(DynamicString jsonStr) {
         Syntax initialSyntax;
-        String initialString = jsonStr.getInitialString();
-        if (LexerUtil.test(initialString, Syntax.APOSTROPHE)) {
+        char initialChar = jsonStr.getChar(0);
+        if (LexerUtil.test(initialChar, Syntax.APOSTROPHE)) {
             initialSyntax = Syntax.APOSTROPHE;
-        } else if (LexerUtil.test(initialString, Syntax.DOUBLE_QUOTES)) {
+        } else if (LexerUtil.test(initialChar, Syntax.DOUBLE_QUOTES)) {
             initialSyntax = Syntax.DOUBLE_QUOTES;
         } else {
             return null;
         }
         jsonStr.slice(1);
-        Iterator<String> iterator = jsonStr.iterator();
+        Iterator<Character> iterator = jsonStr.iterator();
         StringBuilder stringBuilder = new StringBuilder();
         while (iterator.hasNext()) {
-            String next = iterator.next();
+            Character next = iterator.next();
             if (LexerUtil.test(next, initialSyntax)) {
-                jsonStr.slice(next.length());
+                jsonStr.slice(1);
                 return new Lexis(stringBuilder.toString(), LexisType.STRING);
             }
             stringBuilder.append(next);
-            jsonStr.slice(next.length());
+            jsonStr.slice(1);
         }
         throw new RuntimeException("Expected end-of-string quote");
     }
 
     private Lexis lexNumber(DynamicString jsonStr) {
-        Iterator<String> iterator = jsonStr.iterator();
+        Iterator<Character> iterator = jsonStr.iterator();
         StringBuilder stringBuilder = new StringBuilder();
         while (iterator.hasNext()) {
-            String next = iterator.next();
-            if (!LexerUtil.NUMBERS.contains(next)) {
+            Character next = iterator.next();
+            if (!LexerUtil.testNumber(next)) {
                 break;
             }
             stringBuilder.append(next);
@@ -92,7 +94,7 @@ public final class JsonLexer {
     }
 
     private Lexis lexBool(DynamicString jsonStr) {
-        String bool = LexerUtil.testBool(jsonStr.getString());
+        String bool = LexerUtil.testBool(jsonStr.toString());
         if (bool != null) {
             jsonStr.slice(bool.length());
             return new Lexis(Boolean.valueOf(bool), LexisType.BOOL);
@@ -101,7 +103,7 @@ public final class JsonLexer {
     }
 
     private Lexis lexNull(DynamicString jsonStr) {
-        String _null = LexerUtil.testNull(jsonStr.getString());
+        String _null = LexerUtil.testNull(jsonStr.toString());
         if (_null != null) { // null is not null & not null is null
             jsonStr.slice(_null.length());
             return new Lexis(null, LexisType.NULL);
