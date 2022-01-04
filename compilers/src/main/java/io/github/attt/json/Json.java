@@ -9,5 +9,6 @@ public interface Json {
 
     boolean isArray();
 
-    List<Object> scan(String key, boolean deepScan);
+    List<Object> scan(String keyRegex, boolean deepScan);
+
 }

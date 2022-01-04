@@ -1,5 +1,6 @@
 package io.github.attt.json;
 
+import io.github.attt.json.path.JsonPath;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -92,5 +93,22 @@ public class JsonTest {
         System.out.println(objects);
         objects = json.scan("testKey", true);
         System.out.println(objects);
+    }
+
+    @Test
+    public void TestJsonPath() {
+//        JsonPath jsonPath = new JsonPath();
+//        jsonPath.addFunction(o -> {
+//            if (o instanceof Json) {
+//                return ((Json) o).scan("testKe", Json.ScanType.PREFIX, true);
+//            }
+//            return null;
+//        });
+//        Object resolved = jsonPath.resolve((Json) JsonCompiler.compile("{\"testKey\":[{\"testKey\":2.233},\"testKey\"],\"testKey1\":123,\"testKey2\":{\"testKey\":\"hello\"}}"));
+//        System.out.println(resolved);
+
+        JsonPath jsonPath = new JsonPath((Json) JsonCompiler.compile("{\"testKey\":[{\"testKey\":2.233},\"testKey\"],\"testKey1\":123,\"testKey2\":{\"testKey\":\"hello\"}}"));
+        Object compiled = jsonPath.compile("$.*t*.testKey");
+        System.out.println(compiled);
     }
 }

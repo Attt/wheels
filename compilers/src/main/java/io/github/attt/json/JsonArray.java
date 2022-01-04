@@ -29,17 +29,17 @@ public class JsonArray implements Json {
     }
 
     @Override
-    public List<Object> scan(String key, boolean deepScan) {
+    public List<Object> scan(String keyRegex, boolean deepScan) {
         List<Object> result = new ArrayList<>();
         for (Object o : array) {
-            if (o instanceof Json) result.addAll(((Json) o).scan(key, deepScan));
+            if (o instanceof Json) result.addAll(((Json) o).scan(keyRegex, deepScan));
         }
         return result;
     }
 
     @Override
     public String toString() {
-        StringJoiner joiner = new StringJoiner(",");
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
         for (Object v : array) {
             joiner.add(v instanceof String ? "'" + v + "'" : v.toString());
         }

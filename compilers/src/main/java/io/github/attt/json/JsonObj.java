@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 
 /**
  * <strong>Warning</strong>: {@link #put(String, Object)} is not thread safe
@@ -82,30 +83,38 @@ public class JsonObj implements Json {
     }
 
     @Override
-    public List<Object> scan(String key, boolean deepScan){
+    public List<Object> scan(String keyRegex, boolean deepScan) {
         List<Object> result = new ArrayList<>();
         for (JsonObjEle element : elements) {
-            if(element != null){
-                if(element.key.equals(key)) result.add(element.value);
-                if (deepScan && element.value instanceof Json) result.addAll(((Json) element.value).scan(key, deepScan));
-                while (element.next != null){
+            if (element != null) {
+                if (isKeyMatch(keyRegex, element.key)) result.add(element.value);
+                if (deepScan && element.value instanceof Json)
+                    result.addAll(((Json) element.value).scan(keyRegex, deepScan));
+                while (element.next != null) {
                     element = element.next;
-                    if(element.key.equals(key)) result.add(element.value);
-                    if (deepScan && element.value instanceof Json) result.addAll(((Json) element.value).scan(key, deepScan));
+                    if (isKeyMatch(keyRegex, element.key)) result.add(element.value);
+                    if (deepScan && element.value instanceof Json)
+                        result.addAll(((Json) element.value).scan(keyRegex, deepScan));
                 }
             }
         }
         return result;
     }
 
+    private boolean isKeyMatch(String keyRegex, String target) {
+        keyRegex = keyRegex.replaceAll("\\*", "(.*)");
+        Pattern pattern = Pattern.compile(keyRegex);
+        return pattern.matcher(target).matches();
+    }
+
     @Override
     public String toString() {
-        StringJoiner joiner = new StringJoiner(",");
+        StringJoiner joiner = new StringJoiner(",", "{", "}");
         for (JsonObjEle element : elements) {
             if (element != null) {
                 joiner.add(element.toString());
             }
         }
-        return "{" + joiner + "}";
+        return joiner.toString();
     }
 }
